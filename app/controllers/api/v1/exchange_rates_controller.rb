@@ -1,16 +1,11 @@
 module Api
   module V1
     class ExchangeRatesController < ApplicationController
+      before_action :validate_currency_code, only: [:get_rate]
+
       # GET /api/v1/exchange_rates?currency_code=CAD
       def get_rate
-        currency_code = params[:currency_code]&.upcase
-
-        # Validate input
-        if currency_code.blank? || currency_code.length != 3
-          return render json: { error: "currency_code must be 3 letters" }, status: :bad_request
-        end
-
-        rate_data = find_rate(currency_code)
+        rate_data = find_rate(@currency_code)
 
         if rate_data
           render json: format_response(rate_data), status: :ok
@@ -20,6 +15,13 @@ module Api
       end
 
       private
+
+      def validate_currency_code
+        @currency_code = rate_params[:currency_code]&.upcase
+        if @currency_code.blank? || @currency_code.length != 3
+          render json: { error: "currency_code must be 3 letters" }, status: :bad_request
+        end
+      end
 
       def find_rate(currency_code)
         rates = ExchangeRateCacheService.get_rates
@@ -40,6 +42,10 @@ module Api
           valid_for: valid_for,
           rate_string: rate_string
         }
+      end
+
+      def rate_params
+        params.permit(:currency_code)
       end
     end
   end

@@ -1,3 +1,5 @@
+# Generated file that allows the cron container to run the scheduling logic defined in config/schedule.rb
+
 #!/usr/bin/env bash
 set -euo pipefail
 

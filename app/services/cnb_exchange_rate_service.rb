@@ -12,6 +12,7 @@ class CnbExchangeRateService
       # Data from yesterday if today's isn't available yet
       yesterday = (Date.today - 1).strftime("%Y-%m-%d")
       parsed_response = fetch_daily_rates("EN", yesterday)
+      # If it still isn't available then there is likely an issue with the API. In production I would try using a different API as a fallback. As this task only uses one source, we will leave it empty.
     end
     parsed_response["rates"]
   end
@@ -23,6 +24,7 @@ class CnbExchangeRateService
       # Data from last month if this months isn't available yet
       last_month = (Date.today << 1).strftime("%Y-%m")
       parsed_response = fetch_monthly_rates("EN", last_month)
+      # If it still isn't available then there is likely an issue with the API. In production I would try using a different API as a fallback. As this task only uses one source, we will leave it empty.
     end
     parsed_response["rates"]
   end
