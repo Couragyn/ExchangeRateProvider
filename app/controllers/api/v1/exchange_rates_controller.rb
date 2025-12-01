@@ -1,7 +1,7 @@
 module Api
   module V1
     class ExchangeRatesController < ApplicationController
-      before_action :validate_currency_code, only: [:get_rate]
+      before_action :validate_currency_code, only: [ :get_rate ]
 
       # GET /api/v1/exchange_rates?currency_code=CAD
       def get_rate
