@@ -8,13 +8,27 @@ class CnbExchangeRateService
   # Get current exchange rates of commonly traded currencies (updated daily)
   def self.get_daily_rates(lang = 'EN')
     response = get("/exrates/daily?lang=#{lang}")
-    handle_response(response)
+    parsed_response = handle_response(response)
+    if (response.code == 200 && parsed_response["rates"].empty?)
+      # Data from yesterday if today's isn't available yet
+      yesterday = (Date.today - 1).strftime("%Y-%m-%d")
+      response = get("/exrates/daily?lang=#{lang}&date=#{yesterday}")
+      parsed_response = handle_response(response)
+    end
+    parsed_response["rates"]
   end
 
   # Get current exchange rates of less-commonly traded currencies (updated monthly)
   def self.get_monthly_rates(lang = 'EN')
     response = get("/fxrates/daily-month?lang=#{lang}")
-    handle_response(response)
+    parsed_response = handle_response(response)
+    if (response.code == 200 && parsed_response["rates"].empty?)
+      # Data from last month if this months isn't available yet
+      last_month = (Date.today << 1).strftime("%Y-%m")
+      response = get("/fxrates/daily-month?lang=#{lang}&yearMonth=#{last_month}")
+      parsed_response = handle_response(response)
+    end
+    parsed_response["rates"]
   end
 
   private

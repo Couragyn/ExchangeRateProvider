@@ -1,44 +1,22 @@
 class ExchangeRateCacheService
   RATE_CACHE_DURATION = 24.hours
-  CEST_ZONE = "Europe/Prague"
+  CACHE_KEY = "cnb_exchange_rates"
 
   class << self
-    def get_daily_rates
-      cache_key = "cnb_daily_rates"
-      
-      Rails.cache.fetch(cache_key, expires_in: RATE_CACHE_DURATION) do
-        fetch_fresh_daily_rates
-      end
-    end
-
-    def get_monthly_rates
-      cache_key = "cnb_monthly_rates"
-      
-      Rails.cache.fetch(cache_key, expires_in: RATE_CACHE_DURATION) do
-        fetch_fresh_monthly_rates
+    def get_rates      
+      Rails.cache.fetch(CACHE_KEY, expires_in: RATE_CACHE_DURATION) do
+        refresh_rates
       end
     end
 
     # Refresh methods that actively update cache with fresh data
-    def refresh_daily_rates
-      cache_key = "cnb_daily_rates"
-      rates = fetch_fresh_daily_rates
-      Rails.cache.write(cache_key, rates, expires_in: RATE_CACHE_DURATION)
-      rates
-    end
+    def refresh_rates
+      monthly_rates = fetch_fresh_monthly_rates
+      daily_rates = fetch_fresh_daily_rates
+      rates = monthly_rates + daily_rates
 
-    def refresh_monthly_rates
-      cache_key = "cnb_monthly_rates"
-      rates = fetch_fresh_monthly_rates
-      Rails.cache.write(cache_key, rates, expires_in: RATE_CACHE_DURATION)
+      Rails.cache.write(CACHE_KEY, rates, expires_in: RATE_CACHE_DURATION)
       rates
-    end
-
-    def refresh_all_rates
-      {
-        daily: refresh_daily_rates,
-        monthly: refresh_monthly_rates
-      }
     end
 
     private
