@@ -66,9 +66,19 @@ docker-compose up -d app cron
 
 5) Test the API Endpoint
 
-URL: `http://localhost/api/v1/exchange_rates?currency_code=CAD`
+REST API endpoint: `GET http://localhost/api/v1/exchange_rates?currency_code=CAD`
 
 Sample Output:
 ```json
 {"amount":1.0,"rate":13.635,"valid_for":"2025-12-01","rate_string":"1.0 AUD exchanges to 13.635 CZK, set on 2025-12-01 by CNB"}
 ```
+
+## Stack and Dependencies
+- Rails 8.1.1 - Web framework
+- Ruby 3.3.8 - Language
+- Docker - Containerization
+- Httparty - HTTP client to fetch data
+- Whenever - Cron job scheduler
+- WebMock - Stub HTTP requests
+- solid_cache - caching, dejour to Rails 8
+- Minitest - Testing, Rails' default testing framework
