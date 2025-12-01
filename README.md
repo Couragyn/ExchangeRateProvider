@@ -18,7 +18,7 @@ Please write the code like you would if you needed this to run on production env
 
 Should return exchange rates among the specified currencies that are defined by the source. But only those defined by the source, do not return calculated exchange rates. E.g. if the source contains "CZK/USD" but not "USD/CZK", do not return exchange rate "USD/CZK" with value calculated as 1 / "CZK/USD". If the source does not provide some of the currencies, ignore them.
 
-## Developer Considerations and Notes
+## Developer Notes
 
 - CNB Endpoint Swagger: https://api.cnb.cz/cnbapi/swagger-ui.html
 - Endpoints for currency exchange rates
