@@ -6,29 +6,43 @@ class CnbExchangeRateService
   format :json
 
   # Get current exchange rates of commonly traded currencies (updated daily)
-  def self.get_daily_rates(lang = 'EN')
-    response = get("/exrates/daily?lang=#{lang}")
-    parsed_response = handle_response(response)
-    if (response.code == 200 && parsed_response["rates"].empty?)
+  def self.get_daily_rates
+    parsed_response = self.fetch_daily_rates('EN', nil)
+    if (parsed_response["rates"].empty?)
       # Data from yesterday if today's isn't available yet
       yesterday = (Date.today - 1).strftime("%Y-%m-%d")
-      response = get("/exrates/daily?lang=#{lang}&date=#{yesterday}")
-      parsed_response = handle_response(response)
+      parsed_response = fetch_daily_rates('EN', yesterday)
     end
     parsed_response["rates"]
   end
 
   # Get current exchange rates of less-commonly traded currencies (updated monthly)
   def self.get_monthly_rates(lang = 'EN')
-    response = get("/fxrates/daily-month?lang=#{lang}")
-    parsed_response = handle_response(response)
-    if (response.code == 200 && parsed_response["rates"].empty?)
+    parsed_response = self.fetch_monthly_rates('EN', nil)
+    if (parsed_response["rates"].empty?)
       # Data from last month if this months isn't available yet
       last_month = (Date.today << 1).strftime("%Y-%m")
-      response = get("/fxrates/daily-month?lang=#{lang}&yearMonth=#{last_month}")
-      parsed_response = handle_response(response)
+      parsed_response = fetch_monthly_rates('EN', last_month)
     end
     parsed_response["rates"]
+  end
+
+  def self.fetch_daily_rates(lang = 'EN', date = nil)
+    if date.present?
+      response = get("/exrates/daily?lang=#{lang}&date=#{date}")
+    else
+      response = get("/exrates/daily?lang=#{lang}")
+    end
+    handle_response(response)
+  end
+
+  def self.fetch_monthly_rates(lang = 'EN', month = nil)
+    if month.present?
+      response = get("/fxrates/daily-month?lang=#{lang}&yearMonth=#{month}")
+    else
+      response = get("/fxrates/daily-month?lang=#{lang}")
+    end
+    handle_response(response)
   end
 
   private

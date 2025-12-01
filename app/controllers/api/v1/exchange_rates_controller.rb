@@ -30,14 +30,14 @@ module Api
         amount = rate_data["amount"].to_f
         rate = rate_data["rate"].to_f
         currencyCode = rate_data["currencyCode"]
-        date_rate_set = rate_data["validFor"]
+        valid_for = rate_data["validFor"]
 
-        rate_string = "#{amount} #{currencyCode} exchanges to #{rate} CZK, set on #{date_rate_set} by CNB"
+        rate_string = "#{amount} #{currencyCode} exchanges to #{rate} CZK, set on #{valid_for} by CNB"
         
         {
           amount: amount,
           rate: rate,
-          date_rate_set: date_rate_set,
+          valid_for: valid_for,
           rate_string: rate_string
         }
       end
