@@ -9,11 +9,10 @@ class ExchangeRateCacheService
       end
     end
 
-    # Refresh methods that actively update cache with fresh data
     def refresh_rates
-      monthly_rates = fetch_fresh_monthly_rates
       daily_rates = fetch_fresh_daily_rates
-      rates = monthly_rates + daily_rates
+      monthly_rates = fetch_fresh_monthly_rates
+      rates = (daily_rates + monthly_rates).uniq { |r| r["currencyCode"] }
 
       Rails.cache.write(CACHE_KEY, rates, expires_in: RATE_CACHE_DURATION)
       rates
