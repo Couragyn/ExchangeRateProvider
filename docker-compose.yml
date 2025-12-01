@@ -20,7 +20,9 @@ services:
   # Cron service to install whenever-generated crontab and run system cron
   cron:
     build: .
-    command: ["/app/script/cron_entrypoint.sh"]
+    user: root
+    # Override the image entrypoint so we can ensure the script is executable
+    entrypoint: ["sh", "-c", "chmod +x /app/script/cron_entrypoint.sh && exec bash /app/script/cron_entrypoint.sh"]
     environment:
       - RAILS_ENV=production
       - APP_PATH=/app
