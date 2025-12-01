@@ -3,7 +3,7 @@ class ExchangeRateCacheService
   CACHE_KEY = "cnb_exchange_rates"
 
   class << self
-    def get_rates      
+    def get_rates
       Rails.cache.fetch(CACHE_KEY, expires_in: RATE_CACHE_DURATION) do
         refresh_rates
       end

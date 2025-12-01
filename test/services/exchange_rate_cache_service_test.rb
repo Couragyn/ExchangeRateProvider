@@ -6,11 +6,11 @@ class ExchangeRateCacheServiceTest < ActiveSupport::TestCase
   end
 
   include ActiveSupport::Testing::TimeHelpers
-  
+
 
   test "get_rates fetches and caches rates" do
-    daily = [{"currencyCode" => "CAD", "amount" => "1", "rate" => "17.5", "validFor" => "2025-12-01"}]
-    monthly = [{"currencyCode" => "BGN", "amount" => "1", "rate" => "12.0", "validFor" => "2025-11"}]
+    daily = [ { "currencyCode" => "CAD", "amount" => "1", "rate" => "17.5", "validFor" => "2025-12-01" } ]
+    monthly = [ { "currencyCode" => "BGN", "amount" => "1", "rate" => "12.0", "validFor" => "2025-11" } ]
 
     # Stub the private fetch methods to return predictable data
     with_stub(ExchangeRateCacheService, :fetch_fresh_daily_rates, daily) do
@@ -33,11 +33,11 @@ class ExchangeRateCacheServiceTest < ActiveSupport::TestCase
 
   test "refresh_rates merges and deduplicates by currencyCode" do
     daily = [
-      {"currencyCode" => "CAD", "amount" => "1", "rate" => "17.5"},
-      {"currencyCode" => "BGN", "amount" => "1", "rate" => "12.0"}
+      { "currencyCode" => "CAD", "amount" => "1", "rate" => "17.5" },
+      { "currencyCode" => "BGN", "amount" => "1", "rate" => "12.0" }
     ]
     monthly = [
-      {"currencyCode" => "CAD", "amount" => "1", "rate" => "17.6"}
+      { "currencyCode" => "CAD", "amount" => "1", "rate" => "17.6" }
     ]
 
     with_stub(ExchangeRateCacheService, :fetch_fresh_daily_rates, daily) do
@@ -46,18 +46,18 @@ class ExchangeRateCacheServiceTest < ActiveSupport::TestCase
         # Should contain two unique currency codes
         assert_equal 2, rates.size
         codes = rates.map { |r| r["currencyCode"] }.sort
-        assert_equal ["BGN", "CAD"], codes
+        assert_equal [ "BGN", "CAD" ], codes
       end
     end
   end
 
   test "cache expires after RATE_CACHE_DURATION and get_rates refreshes" do
-    first_daily = [{"currencyCode" => "CAD", "amount" => "1", "rate" => "17.5", "validFor" => "2025-12-01"}]
+    first_daily = [ { "currencyCode" => "CAD", "amount" => "1", "rate" => "17.5", "validFor" => "2025-12-01" } ]
     first_monthly = []
 
     second_daily = [
-      {"currencyCode" => "CAD", "amount" => "1", "rate" => "18.0", "validFor" => "2025-12-02"},
-      {"currencyCode" => "EUR", "amount" => "1", "rate" => "24.0", "validFor" => "2025-12-02"}
+      { "currencyCode" => "CAD", "amount" => "1", "rate" => "18.0", "validFor" => "2025-12-02" },
+      { "currencyCode" => "EUR", "amount" => "1", "rate" => "24.0", "validFor" => "2025-12-02" }
     ]
     second_monthly = []
 
@@ -82,7 +82,7 @@ class ExchangeRateCacheServiceTest < ActiveSupport::TestCase
           # Now we expect the refreshed result to have two entries (different size)
           assert_equal 2, refreshed.size
           codes = refreshed.map { |r| r["currencyCode"] }.sort
-          assert_equal ["CAD", "EUR"], codes
+          assert_equal [ "CAD", "EUR" ], codes
 
           # And cache should now contain the refreshed set
           cached_after = Rails.cache.read(ExchangeRateCacheService::CACHE_KEY)

@@ -6,7 +6,7 @@ module Api
       # use shared with_stub helper from test_helper.rb
 
       test "returns rate when found" do
-        rates = [{"currencyCode" => "CAD", "amount" => "1", "rate" => "17.5", "validFor" => "2025-12-01"}]
+        rates = [ { "currencyCode" => "CAD", "amount" => "1", "rate" => "17.5", "validFor" => "2025-12-01" } ]
 
         with_stub(ExchangeRateCacheService, :get_rates, rates) do
           get api_v1_exchange_rates_path, params: { currency_code: "CAD" }

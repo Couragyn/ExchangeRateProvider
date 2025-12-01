@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      get 'exchange_rates', to: 'exchange_rates#get_rate'
+      get "exchange_rates", to: "exchange_rates#get_rate"
     end
   end
 end

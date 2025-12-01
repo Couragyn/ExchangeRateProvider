@@ -1,33 +1,33 @@
 class CnbExchangeRateService
   include HTTParty
-  base_uri 'https://api.cnb.cz/cnbapi'
+  base_uri "https://api.cnb.cz/cnbapi"
 
   default_timeout 10
   format :json
 
   # Get current exchange rates of commonly traded currencies (updated daily)
   def self.get_daily_rates
-    parsed_response = self.fetch_daily_rates('EN', nil)
-    if (parsed_response["rates"].empty?)
+    parsed_response = self.fetch_daily_rates("EN", nil)
+    if parsed_response["rates"].empty?
       # Data from yesterday if today's isn't available yet
       yesterday = (Date.today - 1).strftime("%Y-%m-%d")
-      parsed_response = fetch_daily_rates('EN', yesterday)
+      parsed_response = fetch_daily_rates("EN", yesterday)
     end
     parsed_response["rates"]
   end
 
   # Get current exchange rates of less-commonly traded currencies (updated monthly)
-  def self.get_monthly_rates(lang = 'EN')
-    parsed_response = self.fetch_monthly_rates('EN', nil)
-    if (parsed_response["rates"].empty?)
+  def self.get_monthly_rates(lang = "EN")
+    parsed_response = self.fetch_monthly_rates("EN", nil)
+    if parsed_response["rates"].empty?
       # Data from last month if this months isn't available yet
       last_month = (Date.today << 1).strftime("%Y-%m")
-      parsed_response = fetch_monthly_rates('EN', last_month)
+      parsed_response = fetch_monthly_rates("EN", last_month)
     end
     parsed_response["rates"]
   end
 
-  def self.fetch_daily_rates(lang = 'EN', date = nil)
+  def self.fetch_daily_rates(lang = "EN", date = nil)
     if date.present?
       response = get("/exrates/daily?lang=#{lang}&date=#{date}")
     else
@@ -36,7 +36,7 @@ class CnbExchangeRateService
     handle_response(response)
   end
 
-  def self.fetch_monthly_rates(lang = 'EN', month = nil)
+  def self.fetch_monthly_rates(lang = "EN", month = nil)
     if month.present?
       response = get("/fxrates/daily-month?lang=#{lang}&yearMonth=#{month}")
     else
