@@ -5,26 +5,25 @@ class CnbExchangeRateService
   default_timeout 10
   format :json
 
-  # Get current exchange rates of commonly traded currencies (updated daily)
+  # Get current exchange rates of commonly traded currencies (updated daily). If the default NOW time does not return results, try getting data from yesterday. If that doesn't work it will return an empty set. Testing has shown that data is usually available day of and the previous day. If the data is empty for both then it's better not to have an exchange rate than stale data. Possible considerations for production would be to try a different API as a fallback.
   def self.get_daily_rates
     parsed_response = self.fetch_daily_rates("EN", nil)
     if parsed_response["rates"].empty?
       # Data from yesterday if today's isn't available yet
       yesterday = (Date.today - 1).strftime("%Y-%m-%d")
       parsed_response = fetch_daily_rates("EN", yesterday)
-      # If it still isn't available then there is likely an issue with the API. In production I would try using a different API as a fallback. As this task only uses one source, we will leave it empty.
     end
     parsed_response["rates"]
   end
 
-  # Get current exchange rates of less-commonly traded currencies (updated monthly)
+  # Get current exchange rates of less-commonly traded currencies (updated monthly). If the default NOW time does not return results, try getting data from last month. If that doesn't work it will return an empty set. Testing has shown that this months data is not usually available until the end of the month, but is for the previous month. If the data is empty for both then it's better not to have an exchange rate than stale data. Possible considerations for production would be to try a different API as a fallback.
+  def self.get_daily_rates
   def self.get_monthly_rates(lang = "EN")
     parsed_response = self.fetch_monthly_rates("EN", nil)
     if parsed_response["rates"].empty?
       # Data from last month if this months isn't available yet
       last_month = (Date.today << 1).strftime("%Y-%m")
       parsed_response = fetch_monthly_rates("EN", last_month)
-      # If it still isn't available then there is likely an issue with the API. In production I would try using a different API as a fallback. As this task only uses one source, we will leave it empty.
     end
     parsed_response["rates"]
   end
