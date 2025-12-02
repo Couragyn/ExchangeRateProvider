@@ -17,7 +17,6 @@ class CnbExchangeRateService
   end
 
   # Get current exchange rates of less-commonly traded currencies (updated monthly). If the default NOW time does not return results, try getting data from last month. If that doesn't work it will return an empty set. Testing has shown that this months data is not usually available until the end of the month, but is for the previous month. If the data is empty for both then it's better not to have an exchange rate than stale data. Possible considerations for production would be to try a different API as a fallback.
-  def self.get_daily_rates
   def self.get_monthly_rates(lang = "EN")
     parsed_response = self.fetch_monthly_rates("EN", nil)
     if parsed_response["rates"].empty?
