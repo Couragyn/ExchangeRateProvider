@@ -14,9 +14,9 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
-# Install base packages
+# Install base packages (include cron and tzdata so cron container can run scheduling)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y tzdata curl libjemalloc2 libvips sqlite3 cron && \
     ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
@@ -26,6 +26,9 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
     LD_PRELOAD="/usr/local/lib/libjemalloc.so"
+
+# Default container timezone (can be overridden at runtime via TZ env var)
+ENV TZ="Europe/Prague"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
