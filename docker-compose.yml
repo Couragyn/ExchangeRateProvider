@@ -26,10 +26,37 @@ services:
     environment:
       - RAILS_ENV=production
       - APP_PATH=/app
+      - BUNDLE_WITHOUT=development
+      - BUNDLE_PATH=/usr/local/bundle
+      - BUNDLE_DEPLOYMENT=1
+      - BUNDLE_GEMFILE=/app/Gemfile
+      - GEM_HOME=/usr/local/bundle
+      - GEM_PATH=/usr/local/bundle
     env_file:
       - .env
     volumes:
       - .:/app:cached
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  # Worker service to continuously run SolidQueue jobs (consumes the queue)
+  worker:
+    build: .
+    # Run as the non-root rails user (image sets USER 1000:1000 by default)
+    command: ["sh", "-c", "cd /rails && exec bundle exec bin/jobs start"]
+    environment:
+      - RAILS_ENV=production
+      - BUNDLE_WITHOUT=development
+      - BUNDLE_PATH=/usr/local/bundle
+      - BUNDLE_GEMFILE=/rails/Gemfile
+      - GEM_HOME=/usr/local/bundle
+      - GEM_PATH=/usr/local/bundle
+    env_file:
+      - .env
+    volumes:
+      - .:/rails:cached
+      - ./storage:/rails/storage
     depends_on:
       - app
     restart: unless-stopped

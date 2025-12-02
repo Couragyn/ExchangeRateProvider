@@ -13,7 +13,15 @@ set -euo pipefail
 APP_PATH=${APP_PATH:-/app}
 RAILS_ENV=${RAILS_ENV:-production}
 
-echo "[cron-entrypoint] starting in $APP_PATH (RAILS_ENV=$RAILS_ENV)"
+# Ensure timezone is set for the container/cron daemon. Honor TZ env var if provided,
+# otherwise default will be picked up from the image (Dockerfile sets TZ=Europe/Prague).
+export TZ=${TZ:-Europe/Prague}
+if [ -f "/usr/share/zoneinfo/$TZ" ]; then
+  ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime || true
+  echo "$TZ" > /etc/timezone || true
+fi
+
+echo "[cron-entrypoint] starting in $APP_PATH (RAILS_ENV=$RAILS_ENV, TZ=$TZ)"
 cd "$APP_PATH"
 
 if ! command -v bundle >/dev/null 2>&1; then
