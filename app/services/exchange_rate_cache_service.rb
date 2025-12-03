@@ -1,5 +1,5 @@
 class ExchangeRateCacheService
-  RATE_CACHE_DURATION = 24.hours
+  RATE_CACHE_DURATION = 24.hours + 15.minutes
   CACHE_KEY = "cnb_exchange_rates"
 
   class << self
