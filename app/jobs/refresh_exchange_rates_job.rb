@@ -8,5 +8,6 @@ class RefreshExchangeRatesJob < ApplicationJob
     Rails.logger.info "Successfully refreshed exchange rates at #{Time.current}"
   rescue => e
     Rails.logger.error "Failed to refresh exchange rates - #{e.message}"
+    raise
   end
 end
